@@ -1,0 +1,175 @@
+Part 1: Docker Networking
+
+
+Create a new Docker network named "my_network" using the bridge driver.
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network create my_network
+5f6cf7ff26e464ab4bd6db17bd1992c627249ace7ce43d5b05f79f4ad2cdfd1e
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network ls
+NETWORK ID     NAME         DRIVER    SCOPE
+d3efe5f69a17   bridge       bridge    local
+2a9930679904   host         host      local
+5f6cf7ff26e4   my_network   bridge    local
+4f8581661b8a   none         null      local
+
+Create a new Docker container using the "nginx" image and connect it to the
+"my_network" network. Name the container "nginx_container"
+
+Docker Container created below:
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker run -d -p 8080:80 --name nginx_container nginx
+ed792f682a92f8e550d5b4047ad3c6f938e0beacaee6006648391961234862ca
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS                      PORTS                  NAMES
+ed792f682a92   nginx     "/docker-entrypoint.…"   25 seconds ago   Up 23 seconds               0.0.0.0:8080->80/tcp   nginx_container
+1094ff7a0184   redis     "docker-entrypoint.s…"   59 minutes ago   Exited (0) 58 minutes ago                          naughty_jemison
+
+Docker container connected to network
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network connect my_network nginx_container
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network inspect 5f6cf7ff26e4
+
+ "Containers": {
+            "ed792f682a92f8e550d5b4047ad3c6f938e0beacaee6006648391961234862ca": {
+                "Name": "nginx_container",
+                "EndpointID": "dd854f32c9a9289cea9e997ed78d607bb559e9482eaf3861e5acf163bb0215b8",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+
+Verify that the "nginx" default page is accessible on your host machine at
+http://localhost:8080. 
+
+Default page is accessible.
+
+
+● Create a new Docker container using the "httpd" image and connect it to the
+"my_network" network. Name the container "httpd_container"
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker run -d -p 8081:80 --name httpd_container httpd
+df3564a431db01989852aef2a545a603649735e19b5cd01c5b3db224013f86e6
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network connect my_network httpd_container
+
+● Verify that the "httpd" default page is accessible on your host machine at
+http://localhost:8081.
+Default page is accessible.
+
+Use the "docker network inspect" command to display information about the
+"my_network" network
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network inspect my_network
+Two containers i.e httpd_container and nginx_container associated to my_network.
+
+ [
+    {
+        "Name": "my_network",
+        "Id": "5f6cf7ff26e464ab4bd6db17bd1992c627249ace7ce43d5b05f79f4ad2cdfd1e",
+        "Created": "2023-11-10T17:34:28.1734411Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "df3564a431db01989852aef2a545a603649735e19b5cd01c5b3db224013f86e6": {
+                "Name": "httpd_container",
+                "EndpointID": "01dd052574bce8fabffc21af6c0196fb6cab2408ed4eba28fe5841d8cb8c69a8",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "ed792f682a92f8e550d5b4047ad3c6f938e0beacaee6006648391961234862ca": {
+                "Name": "nginx_container",
+                "EndpointID": "dd854f32c9a9289cea9e997ed78d607bb559e9482eaf3861e5acf163bb0215b8",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+
+
+Stop and remove the "nginx_container" container.
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker stop nginx_container
+nginx_container
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker rm nginx_container
+nginx_container
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED             STATUS                         PORTS                  NAMES
+df3564a431db   httpd     "httpd-foreground"       8 minutes ago       Up 8 minutes                   0.0.0.0:8081->80/tcp   httpd_container
+1094ff7a0184   redis     "docker-entrypoint.s…"   About an hour ago   Exited (0) About an hour ago                          naughty_jemison
+
+Create a new Docker container using the "nginx" image and connect it to the
+"my_network" network. Name the container "nginx_container_2
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker run -d -p 8082:80 --name nginx_container_2 nginx
+f89f7d13b6fc7c183c809e2f54a968302fce4b4906352d3416d238431453e198
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED             STATUS                         PORTS                  NAMES
+f89f7d13b6fc   nginx     "/docker-entrypoint.…"   44 seconds ago      Up 43 seconds                  0.0.0.0:8082->80/tcp   nginx_container_2
+df3564a431db   httpd     "httpd-foreground"       11 minutes ago      Up 11 minutes                  0.0.0.0:8081->80/tcp   httpd_container
+1094ff7a0184   redis     "docker-entrypoint.s…"   About an hour ago   Exited (0) About an hour ago                          naughty_jemison
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network connect my_network nginx_container_2
+
+Verify that the "nginx" default page is accessible on your host machine at
+http://localhost:8082
+
+Default page for nginx is accessible.
+
+Use the "docker container ls" command to display information about all running
+containers
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker container ls
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                  NAMES
+f89f7d13b6fc   nginx     "/docker-entrypoint.…"   3 minutes ago    Up 3 minutes    0.0.0.0:8082->80/tcp   nginx_container_2
+df3564a431db   httpd     "httpd-foreground"       13 minutes ago   Up 13 minutes   0.0.0.0:8081->80/tcp   httpd_container
+
+Stop and remove all containers
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker stop $(docker ps -a -q)
+f89f7d13b6fc
+df3564a431db
+1094ff7a0184
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker rm $(docker ps -a -q)
+f89f7d13b6fc
+df3564a431db
+1094ff7a0184
+
+Cleanup: Remove the "my_network" network.
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network rm 5f6cf7ff26e4
+5f6cf7ff26e4
+
+PS C:\Users\HP\Desktop\Docker_Assignment_3_Part_1> docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+d3efe5f69a17   bridge    bridge    local
+2a9930679904   host      host      local
+4f8581661b8a   none      null      local 
+
+
+
+
